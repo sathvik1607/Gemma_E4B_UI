@@ -1,16 +1,105 @@
-# React + Vite
+# 🚀 Gemma E4B UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React-based frontend for interacting with the Gemma LLM via a FastAPI backend.
+Supports text chat and image uploads in a simple, responsive interface.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+* 💬 Chat interface (`/chat`)
+* 🖼️ Image upload support (`/chat-file`)
+* ✍️ Markdown-rendered responses
+* 📱 Responsive UI
+* ⚡ Fast and minimal design
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📦 Requirements
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* Node.js 18+
+* npm
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+
+```bash id="x1q7sm"
+git clone https://github.com/sathvik1607/Gemma_E4B_UI.git
+cd Gemma_E4B_UI
+```
+
+---
+
+### 2. Install dependencies
+
+```bash id="n2k9pl"
+npm install
+```
+
+---
+
+## 🔑 Environment Configuration
+
+Create a `.env` file in the root directory:
+
+```env id="c7m4zd"
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+⚠️ Make sure this matches your backend URL.
+
+---
+
+## ▶️ Run the App
+
+```bash id="r8j2vd"
+npm run dev
+```
+
+App runs at:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 📡 API Integration
+
+### 1. Text Chat
+
+**POST** `/chat`
+
+```json id="p3f8lw"
+{
+  "message": "Hello"
+}
+```
+
+---
+
+### 2. Image + Text
+
+**POST** `/chat-file`
+
+Form data:
+
+* `file`: image
+* `mssg`: text
+
+---
+
+## 🧠 Notes
+
+* Image uploads are supported (max 5MB)
+* Ensure backend is running before using the app
+* API base URL must be set correctly in `.env`
+
+---
+
+## 📄 License
+
+MIT
