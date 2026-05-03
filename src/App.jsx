@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Settings, Send, User, Paperclip, Trash2, X, FileText, Image } from 'lucide-react';
+import { Plus, Settings, Send, User, Paperclip, Trash2, X, Image } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import './index.css';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
+const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -55,13 +55,20 @@ function App() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      setFileError('Only PDF and image files are allowed.');
+    // Reject PDFs explicitly
+    if (file.type === 'application/pdf') {
+      setFileError('PDF files are not supported. Please upload an image instead (PNG, JPG, GIF, WebP, SVG).');
+      e.target.value = '';
+      return;
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setFileError('Only image files are allowed (PNG, JPG, GIF, WebP, SVG). Max size: 5 MB.');
       e.target.value = '';
       return;
     }
     if (file.size > MAX_FILE_SIZE) {
-      setFileError('File must be smaller than 5 MB.');
+      setFileError('Image must be smaller than 5 MB.');
       e.target.value = '';
       return;
     }
@@ -215,7 +222,7 @@ function App() {
                 <div className="bot-avatar">G</div>
                 <div className="text">
                   <h2>Hello! I'm Gemma E4B.</h2>
-                  <p>Ask me anything or attach a PDF / image to get started.</p>
+                  <p>Ask me anything or attach an image to get started. (Max 5 MB)</p>
                   <div className="suggestions">
                     {['Compare these two ideas...', 'Write a story about a robot', 'Help me debug this React code'].map(s => (
                       <button key={s} className="suggestion-chip" onClick={() => setInput(s)}>{s}</button>
@@ -296,7 +303,7 @@ function App() {
             {/* File Preview Chip */}
             {selectedFile && (
               <div className="file-preview">
-                {isImageFile(selectedFile) ? <Image size={16} /> : <FileText size={16} />}
+                <Image size={16} />
                 <span className="file-name">{selectedFile.name}</span>
                 <span className="file-size">({(selectedFile.size / 1024).toFixed(0)} KB)</span>
                 <button type="button" className="file-remove" onClick={removeFile}><X size={14} /></button>
@@ -322,7 +329,7 @@ function App() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".pdf,image/*"
+                  accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml"
                   onChange={handleFileSelect}
                   style={{ display: 'none' }}
                 />
@@ -330,7 +337,7 @@ function App() {
                   type="button"
                   className={`tool-btn ${selectedFile ? 'tool-btn-active' : ''}`}
                   onClick={() => fileInputRef.current?.click()}
-                  title="Attach PDF or image (max 5 MB)"
+                  title="Attach image (PNG, JPG, GIF, WebP, SVG — max 5 MB)"
                 >
                   <Paperclip size={18} />
                 </button>
