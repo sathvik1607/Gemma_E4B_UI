@@ -14,6 +14,13 @@ function App() {
     const saved = localStorage.getItem('gemma_chat_history');
     return saved ? JSON.parse(saved) : [];
   });
+  const [sesssionId, setSessionId] = useState(() => {
+    const saved = localStorage.getItem('gemma_session_id');
+    if (saved) return saved;
+    const newId = 'sess-' + Date.now();
+    localStorage.setItem('gemma_session_id', newId);
+    return newId;
+  });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -26,7 +33,8 @@ function App() {
   // ---------- persistence ----------
   useEffect(() => {
     localStorage.setItem('gemma_chat_history', JSON.stringify(messages));
-  }, [messages]);
+    localStorage.setItem('gemma_session_id', sesssionId);
+  }, [messages, sesssionId]);
 
   // ---------- auto-scroll ----------
   const scrollToBottom = () => {
@@ -125,6 +133,7 @@ function App() {
         const formData = new FormData();
         formData.append('file', selectedFile);
         formData.append('mssg', trimmed);
+        formData.append('session_id', sesssionId);
 
         const response = await fetch(`${API_BASE_URL}/chat-file`, {
           method: 'POST',
@@ -137,7 +146,7 @@ function App() {
         const response = await fetch(`${API_BASE_URL}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: trimmed }),
+          body: JSON.stringify({ message: trimmed, session_id: sesssionId }),
         });
         if (!response.ok) throw new Error('Failed to connect to Gemma E4B');
         data = await response.json();
@@ -155,6 +164,7 @@ function App() {
   const clearChat = () => {
     if (window.confirm('Are you sure you want to clear this conversation?')) {
       setMessages([]);
+      setSessionId('sess-' + Date.now());
     }
   };
 
@@ -170,7 +180,7 @@ function App() {
             <div className="logo-icon">G</div>
             <span>Gemma E4B</span>
           </div>
-          <button className="new-chat-btn" onClick={() => { setMessages([]); setSelectedFile(null); }}>
+          <button className="new-chat-btn" onClick={() => { setMessages([]); setSelectedFile(null); setSessionId('sess-' + Date.now()); }}>
             <Plus size={18} /> New Chat
           </button>
         </div>
